@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discover Tunisia AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #E8D5A3; --terra: #C4622D; --night: #0D1117;
+    --gold: #D4A017; --turq: #2A9D8F; --cream: #FAF3E0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Cairo',sans-serif; background:var(--night); color:var(--cream); overflow-x:hidden; }
+
+  .lang-bar {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(13,17,23,0.96); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,0.07);
+    display:flex; justify-content:center; gap:0.5rem; padding:0.6rem 1rem;
+  }
+  .lang-btn {
+    background:transparent; border:1px solid rgba(255,255,255,0.15);
+    color:rgba(250,243,224,0.6); padding:0.3rem 1rem; border-radius:50px;
+    font-size:0.85rem; cursor:pointer; transition:all 0.2s; font-family:inherit;
+  }
+  .lang-btn.active, .lang-btn:hover { background:var(--terra); border-color:var(--terra); color:white; }
+
+  .hero {
+    min-height:100vh; position:relative;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:7rem 2rem 4rem; overflow:hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(196,98,45,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(42,157,143,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 90%, rgba(212,160,23,0.12) 0%, transparent 50%);
+  }
+  .mosaic-bg {
+    position:absolute; inset:0; opacity:0.04; z-index:0;
+    background-image:
+      repeating-linear-gradient(45deg, var(--gold) 0,var(--gold) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(-45deg, var(--terra) 0,var(--terra) 1px, transparent 1px, transparent 20px);
+  }
+  .hero-content { position:relative; z-index:1; max-width:800px; }
+  .badge {
+    display:inline-block; background:rgba(212,160,23,0.12);
+    border:1px solid rgba(212,160,23,0.35); color:var(--gold);
+    padding:0.4rem 1.2rem; border-radius:50px; font-size:0.82rem; letter-spacing:2px;
+    margin-bottom:2rem; animation:fadeDown 0.7s ease both;
+  }
+  .hero h1 { font-size:clamp(2.8rem,9vw,6.5rem); line-height:1.1; margin-bottom:1rem; animation:fadeUp 0.8s ease 0.2s both; }
+  .hero h1 .line1 { display:block; color:var(--cream); }
+  .hero h1 .line2 { display:block; color:var(--terra); }
+  .hero h1 .line3 { display:block; color:var(--gold); font-size:0.5em; font-weight:300; margin-top:0.3em; }
+  .hero-sub { font-size:1.1rem; color:rgba(250,243,224,0.65); max-width:520px; margin:0 auto 2.5rem; line-height:1.9; animation:fadeUp 0.8s ease 0.4s both; }
+  .hero-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; animation:fadeUp 0.8s ease 0.6s both; }
+  .btn-primary { background:var(--terra); color:white; border:none; padding:0.9rem 2.2rem; border-radius:50px; font-family:'Cairo',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-block; }
+  .btn-primary:hover { background:#d4703a; transform:translateY(-2px); box-shadow:0 10px 30px rgba(196,98,45,0.35); }
+  .btn-secondary { background:transparent; color:var(--gold); border:1px solid rgba(212,160,23,0.45); padding:0.9rem 2.2rem; border-radius:50px; font-family:'Cairo',sans-serif; font-size:1rem; cursor:pointer; transition:all 0.3s; text-decoration:none; display:inline-block; }
+  .btn-secondary:hover { background:rgba(212,160,23,0.1); transform:translateY(-2px); }
+
+  .chat-section { padding:4rem 1.5rem; max-width:800px; margin:0 auto; }
+  .section-title { text-align:center; margin-bottom:2.5rem; }
+  .section-title h2 { font-size:clamp(1.8rem,4vw,3rem); color:var(--sand); margin-bottom:0.4rem; }
+  .section-title p { color:rgba(250,243,224,0.55); font-size:0.95rem; }
+  .chat-container { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; overflow:hidden; }
+  .chat-messages { min-height:280px; max-height:380px; overflow-y:auto; padding:1.5rem; display:flex; flex-direction:column; gap:1rem; }
+  .chat-messages::-webkit-scrollbar { width:4px; }
+  .chat-messages::-webkit-scrollbar-thumb { background:rgba(212,160,23,0.3); border-radius:2px; }
+  .message { max-width:82%; padding:0.9rem 1.2rem; border-radius:16px; font-size:0.93rem; line-height:1.75; animation:msgIn 0.3s ease; }
+  .message.ai { background:rgba(196,98,45,0.13); border:1px solid rgba(196,98,45,0.2); align-self:flex-start; border-radius:16px 16px 16px 4px; }
+  .message.user { background:rgba(42,157,143,0.13); border:1px solid rgba(42,157,143,0.2); align-self:flex-end; border-radius:16px 16px 4px 16px; }
+  .message.loading { background:rgba(196,98,45,0.08); border:1px solid rgba(196,98,45,0.12); align-self:flex-start; color:rgba(250,243,224,0.45); font-style:italic; }
+  .quick-questions { padding:0 1.5rem 1rem; display:flex; flex-wrap:wrap; gap:0.5rem; }
+  .quick-q { background:rgba(212,160,23,0.07); border:1px solid rgba(212,160,23,0.18); color:var(--gold); padding:0.35rem 0.85rem; border-radius:50px; font-size:0.78rem; cursor:pointer; transition:all 0.2s; font-family:'Cairo',sans-serif; }
+  .quick-q:hover { background:rgba(212,160,23,0.14); transform:translateY(-1px); }
+  .chat-input-area { border-top:1px solid rgba(255,255,255,0.07); padding:1rem 1.5rem; display:flex; gap:0.8rem; align-items:center; }
+  .chat-input { flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:0.75rem 1.1rem; color:var(--cream); font-family:'Cairo',sans-serif; font-size:0.93rem; outline:none; transition:border-color 0.3s; }
+  .chat-input::placeholder { color:rgba(250,243,224,0.28); }
+  .chat-input:focus { border-color:rgba(212,160,23,0.4); }
+  .send-btn { background:var(--terra); border:none; border-radius:12px; width:44px; height:44px; cursor:pointer; font-size:1.1rem; transition:all 0.3s; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .send-btn:hover { background:#d4703a; transform:scale(1.05); }
+  .send-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+  .features { padding:4rem 1.5rem; max-width:1100px; margin:0 auto; }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.2rem; margin-top:2.5rem; }
+  .feature-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:1.8rem; transition:all 0.3s; position:relative; overflow:hidden; }
+  .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--terra),var(--gold)); opacity:0; transition:opacity 0.3s; }
+  .feature-card:hover { transform:translateY(-4px); border-color:rgba(212,160,23,0.18); }
+  .feature-card:hover::before { opacity:1; }
+  .feature-icon { font-size:2.2rem; margin-bottom:0.8rem; display:block; }
+  .feature-card h3 { font-size:1.1rem; font-weight:700; color:var(--sand); margin-bottom:0.5rem; }
+  .feature-card p { color:rgba(250,243,224,0.55); font-size:0.88rem; line-height:1.75; }
+
+  footer { text-align:center; padding:2.5rem 1.5rem; border-top:1px solid rgba(255,255,255,0.06); color:rgba(250,243,224,0.28); font-size:0.82rem; }
+  footer span { color:var(--terra); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  body.ltr { direction:ltr; }
+  body.ltr .chat-input { text-align:left; direction:ltr; }
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('ar',this)">🇹🇳 العربية</button>
+  <button class="lang-btn" onclick="setLang('fr',this)">🇫🇷 Français</button>
+  <button class="lang-btn" onclick="setLang('en',this)">🇬🇧 English</button>
+</div>
+
+<section class="hero">
+  <div class="mosaic-bg"></div>
+  <div class="hero-content">
+    <div class="badge" id="hero-badge"></div>
+    <h1>
+      <span class="line1" id="hero-line1"></span>
+      <span class="line2" id="hero-line2"></span>
+      <span class="line3" id="hero-line3"></span>
+    </h1>
+    <p class="hero-sub" id="hero-sub"></p>
+    <div class="hero-buttons">
+      <a href="#chat" class="btn-primary" id="btn-start"></a>
+      <a href="#features" class="btn-secondary" id="btn-more"></a>
+    </div>
+  </div>
+</section>
+
+<section class="chat-section" id="chat">
+  <div class="section-title">
+    <h2 id="chat-title"></h2>
+    <p id="chat-sub"></p>
+  </div>
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="quick-questions" id="quickQuestions"></div>
+    <div class="chat-input-area">
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      <input type="text" class="chat-input" id="chatInput" onkeypress="if(event.key==='Enter') sendMessage()">
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-title">
+    <h2 id="feat-title"></h2>
+    <p id="feat-sub"></p>
+  </div>
+  <div class="features-grid" id="featuresGrid"></div>
+</section>
+
+<footer>
+  <p id="footer-text"></p>
+  <p style="margin-top:0.4rem;opacity:0.6">Built on Pi Network Testnet</p>
+</footer>
+
+<script>
+const T = {
+  ar: {
+    dir:'rtl', langAttr:'ar',
+    badge:'🇹🇳  مدعوم بالذكاء الاصطناعي  🤖',
+    line1:'اكتشف', line2:'تونس', line3:'بالذكاء الاصطناعي',
+    sub:'مرشدك الذكي لاستكشاف جمال تونس — من قرطاج العريقة إلى صحراء الجنوب الساحرة',
+    btnStart:'ابدأ الاستكشاف ✨', btnMore:'اعرف أكثر',
+    chatTitle:'اسأل مرشدك الذكي 🤖',
+    chatSub:'اطرح أي سؤال عن تونس — سياحة، ثقافة، طعام، تاريخ...',
+    welcome:'مرحباً! أنا مرشدك الذكي لاستكشاف تونس 🇹🇳 اسألني عن أي شيء — مواقع، طعام، تاريخ، نصائح سفر...',
+    placeholder:'اسأل عن تونس...',
+    featTitle:'ماذا يقدم التطبيق؟',
+    featSub:'كل ما تحتاجه لاستكشاف تونس في مكان واحد',
+    footer:'صُنع بـ <span>♥</span> من أجل تونس الجميلة | Discover Tunisia AI © 2025',
+    quickQs:[
+      {icon:'🏛️',text:'أفضل الأماكن السياحية؟'},
+      {icon:'🍲',text:'أشهر الأكلات التونسية؟'},
+      {icon:'📜',text:'تاريخ قرطاج'},
+      {icon:'🏖️',text:'أجمل الشواطئ؟'},
+      {icon:'📅',text:'أفضل وقت للزيارة؟'},
+    ],
+    features:[
+      {icon:'🏛️',title:'المعالم التاريخية',desc:'تعرّف على قرطاج، الجم، سيدي بوسعيد والمدينة العتيقة بتونس'},
+      {icon:'🍲',title:'المطبخ التونسي',desc:'اكتشف أسرار الكسكسي، البريك، الشكشوكة وآلاف الوصفات الأصيلة'},
+      {icon:'🗺️',title:'مسارات سياحية',desc:'خطط لرحلتك مع مقترحات مخصصة حسب اهتماماتك وميزانيتك'},
+      {icon:'🌍',title:'متعدد اللغات',desc:'يتحدث عربي، français وEnglish — مرشدك يفهمك بأي لغة'},
+      {icon:'⚡',title:'Pi Network',desc:'متاح على منصة Pi Network — استكشف تونس وادفع بعملة Pi'},
+      {icon:'🏖️',title:'الطبيعة والشواطئ',desc:'من جربة الحالمة إلى صحراء الجنوب — اكتشف تونس الطبيعية'},
+    ],
+    systemPrompt:'أنت مرشد سياحي ذكي متخصص في تونس. تتحدث العربية. تقدم معلومات دقيقة وشيقة عن المعالم السياحية، التاريخ، الثقافة، الطعام، الشواطئ. أسلوبك ودي ومتحمس. إجاباتك مختصرة ومفيدة (3-5 جمل). استخدم emoji أحياناً.',
+  },
+  fr: {
+    dir:'ltr', langAttr:'fr',
+    badge:'🇹🇳  POWERED BY AI  🤖',
+    line1:'Découvrez', line2:'la Tunisie', line3:"avec l'Intelligence Artificielle",
+    sub:"Votre guide intelligent pour explorer la Tunisie — de l'antique Carthage aux dunes du Sahara",
+    btnStart:"Commencer l'exploration ✨", btnMore:'En savoir plus',
+    chatTitle:'Demandez à votre guide IA 🤖',
+    chatSub:'Posez n\'importe quelle question sur la Tunisie — tourisme, culture, cuisine, histoire...',
+    welcome:"Bonjour ! Je suis votre guide IA pour découvrir la Tunisie 🇹🇳 Posez-moi n'importe quelle question — sites, gastronomie, histoire, conseils voyage...",
+    placeholder:'Posez une question sur la Tunisie...',
+    featTitle:"Que propose l'application ?",
+    featSub:'Tout ce dont vous avez besoin pour explorer la Tunisie en un seul endroit',
+    footer:'Fait avec <span>♥</span> pour la belle Tunisie | Discover Tunisia AI © 2025',
+    quickQs:[
+      {icon:'🏛️',text:'Meilleurs sites touristiques ?'},
+      {icon:'🍲',text:'Cuisine tunisienne ?'},
+      {icon:'📜',text:'Histoire de Carthage'},
+      {icon:'🏖️',text:'Plus belles plages ?'},
+      {icon:'📅',text:'Meilleure période pour visiter ?'},
+    ],
+    features:[
+      {icon:'🏛️',title:'Sites historiques',desc:'Découvrez Carthage, El Jem, Sidi Bou Saïd et la Médina de Tunis'},
+      {icon:'🍲',title:'Cuisine tunisienne',desc:'Explorez les secrets du couscous, brik, chakchouka et mille recettes authentiques'},
+      {icon:'🗺️',title:'Itinéraires touristiques',desc:'Planifiez votre voyage avec des suggestions personnalisées selon vos envies'},
+      {icon:'🌍',title:'Multilingue',desc:'Parle arabe, français et anglais — votre guide vous comprend dans votre langue'},
+      {icon:'⚡',title:'Pi Network',desc:'Disponible sur Pi Network — explorez la Tunisie et payez en Pi'},
+      {icon:'🏖️',title:'Nature & Plages',desc:"De l'île de Djerba au Sahara — découvrez la Tunisie naturelle"},
+    ],
+    systemPrompt:"Tu es un guide touristique intelligent spécialisé en Tunisie. Tu parles français. Tu fournis des informations précises et captivantes sur les sites touristiques, l'histoire, la culture, la gastronomie, les plages. Ton style est amical et enthousiaste. Tes réponses sont courtes et utiles (3-5 phrases). Utilise des emojis occasionnellement.",
+  },
+  en: {
+    dir:'ltr', langAttr:'en',
+    badge:'🇹🇳  POWERED BY AI  🤖',
+    line1:'Discover', line2:'Tunisia', line3:'with Artificial Intelligence',
+    sub:'Your smart guide to exploring Tunisia — from ancient Carthage to the magical Sahara desert',
+    btnStart:'Start Exploring ✨', btnMore:'Learn More',
+    chatTitle:'Ask your AI Guide 🤖',
+    chatSub:'Ask anything about Tunisia — tourism, culture, food, history...',
+    welcome:"Hello! I'm your AI guide to discovering Tunisia 🇹🇳 Ask me anything — sites, food, history, travel tips...",
+    placeholder:'Ask about Tunisia...',
+    featTitle:'What does the app offer?',
+    featSub:'Everything you need to explore Tunisia in one place',
+    footer:'Made with <span>♥</span> for beautiful Tunisia | Discover Tunisia AI © 2025',
+    quickQs:[
+      {icon:'🏛️',text:'Best tourist sites?'},
+      {icon:'🍲',text:'Tunisian cuisine?'},
+      {icon:'📜',text:'History of Carthage'},
+      {icon:'🏖️',text:'Most beautiful beaches?'},
+      {icon:'📅',text:'Best time to visit?'},
+    ],
+    features:[
+      {icon:'🏛️',title:'Historical Sites',desc:'Discover Carthage, El Jem, Sidi Bou Said and the Medina of Tunis'},
+      {icon:'🍲',title:'Tunisian Cuisine',desc:'Explore the secrets of couscous, brik, chakchouka and thousands of authentic recipes'},
+      {icon:'🗺️',title:'Travel Itineraries',desc:'Plan your trip with personalized suggestions based on your interests and budget'},
+      {icon:'🌍',title:'Multilingual',desc:'Speaks Arabic, French and English — your guide understands you in any language'},
+      {icon:'⚡',title:'Pi Network',desc:'Available on Pi Network — explore Tunisia and pay with Pi coins'},
+      {icon:'🏖️',title:'Nature & Beaches',desc:"From dreamy Djerba to the Sahara — discover Tunisia's natural beauty"},
+    ],
+    systemPrompt:"You are an intelligent tourist guide specialized in Tunisia. You speak English. You provide accurate and engaging information about tourist sites, history, culture, food, beaches, desert. Your style is friendly and enthusiastic. Your answers are concise and helpful (3-5 sentences). Use emojis occasionally.",
+  }
+};
+
+let currentLang = 'ar';
+let history = [];
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  const t = T[lang];
+  document.documentElement.setAttribute('lang', t.langAttr);
+  document.documentElement.setAttribute('dir', t.dir);
+  document.body.className = t.dir === 'ltr' ? 'ltr' : '';
+
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  document.getElementById('hero-badge').textContent = t.badge;
+  document.getElementById('hero-line1').textContent = t.line1;
+  document.getElementById('hero-line2').textContent = t.line2;
+  document.getElementById('hero-line3').textContent = t.line3;
+  document.getElementById('hero-sub').textContent = t.sub;
+  document.getElementById('btn-start').textContent = t.btnStart;
+  document.getElementById('btn-more').textContent = t.btnMore;
+  document.getElementById('chat-title').textContent = t.chatTitle;
+  document.getElementById('chat-sub').textContent = t.chatSub;
+  document.getElementById('chatInput').placeholder = t.placeholder;
+  document.getElementById('feat-title').textContent = t.featTitle;
+  document.getElementById('feat-sub').textContent = t.featSub;
+  document.getElementById('footer-text').innerHTML = t.footer;
+
+  history = [];
+  document.getElementById('chatMessages').innerHTML =
+    `<div class="message ai">🤖 ${t.welcome}</div>`;
+
+  document.getElementById('quickQuestions').innerHTML =
+    t.quickQs.map(q =>
+      `<button class="quick-q" onclick="ask('${q.text.replace(/'/g,"&#39;")}')">${q.icon} ${q.text}</button>`
+    ).join('');
+
+  document.getElementById('featuresGrid').innerHTML =
+    t.features.map(f =>
+      `<div class="feature-card"><span class="feature-icon">${f.icon}</span><h3>${f.title}</h3><p>${f.desc}</p></div>`
+    ).join('');
+}
+
+async function sendMessage() {
+  const inp = document.getElementById('chatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  await ask(text);
+}
+
+async function ask(text) {
+  const t = T[currentLang];
+  const msgs = document.getElementById('chatMessages');
+  const btn = document.getElementById('sendBtn');
+
+  msgs.innerHTML += `<div class="message user">${text}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const lid = 'l' + Date.now();
+  msgs.innerHTML += `<div class="message loading" id="${lid}">⏳ ...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  btn.disabled = true;
+
+  history.push({role:'user', content:text});
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: t.systemPrompt,
+        messages: history
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || '...';
+    history.push({role:'assistant', content:reply});
+    document.getElementById(lid).remove();
+    msgs.innerHTML += `<div class="message ai">🤖 ${reply}</div>`;
+  } catch(e) {
+    document.getElementById(lid).remove();
+    msgs.innerHTML += `<div class="message ai">⚠️ Error. Please try again.</div>`;
+  }
+
+  btn.disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// Init
+setLang('ar', document.querySelector('.lang-btn'));
+</script>
+</body>
+</html>
